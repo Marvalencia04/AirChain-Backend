@@ -1,0 +1,109 @@
+openapi: 3.0.0
+servers:
+  - description: Servidor de la API para el proyecto Biometría
+    url: http://localhost:4000  # Cambia esto según tu configuración
+info:
+  version: "1.0.0"
+  title: API de Biometría
+  description: La API para el proyecto Biometría IoT
+paths:
+  /api/gases:
+    get:
+      tags:
+        - Gases
+      description: Obtiene todos los registros de gases.
+      operationId: getGases
+      responses:
+        '200':
+          description: Lista de todos los gases.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      format: int32
+                      example: 1
+                    gas:
+                      type: string
+                      example: "Metano"
+                    valor:
+                      type: number
+                      format: float
+                      example: 12.34
+                    hora:
+                      type: string
+                      format: date-time
+                      example: "2024-10-06T12:34:56Z"
+                    lugar:
+                      type: string
+                      example: "Sala de control"
+
+    post:
+      tags:
+        - Gases
+      description: Inserta un nuevo registro de medida de gas.
+      operationId: createGas
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gas:
+                  type: string
+                  example: "Dióxido de carbono"
+                valor:
+                  type: number
+                  format: float
+                  example: 5.67
+                hora:
+                  type: string
+                  format: date-time
+                  example: "2024-10-06T12:34:56Z"
+                lugar:
+                  type: string
+                  example: "Laboratorio"
+      responses:
+        '201':
+          description: Registro de gas insertado correctamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: int32
+                    example: 2
+                  gas:
+                    type: string
+                    example: "Dióxido de carbono"
+                  valor:
+                    type: number
+                    format: float
+                    example: 5.67
+                  hora:
+                    type: string
+                    format: date-time
+                    example: "2024-10-06T12:34:56Z"
+                  lugar:
+                    type: string
+                    example: "Laboratorio"
+        '500':
+          description: Error al insertar medida.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Error al insertar medida"
+                  details:
+                    type: string
+                    example: "Error de base de datos"

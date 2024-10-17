@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  mysqldb:
+    image: mysql
+    env_file: ./.env
+    environment:
+      - MYSQL_ROOT_PASSWORD=$MYSQLDB_ROOT_PASSWORD
+      - MYSQL_DATABASE=$MYSQLDB_DATABASE
+    ports:
+      - "${MYSQLDB_LOCAL_PORT}:${MYSQLDB_DOCKER_PORT}"
+    volumes:
+      - mysqldb_data:/var/lib/mysql
+
+  app:
+    build: .
+    depends_on:
+      - mysqldb
+    environment:
+      - MYSQLDB_HOST=$MYSQLDB_HOST
+      - MYSQLDB_PORT=$MYSQLDB_PORT
+      - MYSQLDB_DATABASE=$MYSQLDB_DATABASE
+      - MYSQLDB_ROOT_PASSWORD=$MYSQLDB_ROOT_PASSWORD
+    ports:
+      - "${NODE_LOCAL_PORT}:${NODE_DOCKER_PORT}"
+    volumes:
+      - .:/myapp  # Esto montará tu código fuente en el contenedor
+    command: npm run dev  # Cambia el comando para usar nodemon
+
+volumes:
+  mysqldb_data:
