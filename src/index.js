@@ -4,6 +4,12 @@ import { config } from "dotenv";
 import cors from "cors";
 import apiRoutes from "../rutas/api.js"; // Importar las rutas desde api.js
 
+//REACT
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './App'; // Importar el componente principal
+
+ReactDOM.render(<App />, document.getElementById('root'));
 // Cargar las variables de entorno desde el archivo .env
 config();
 
