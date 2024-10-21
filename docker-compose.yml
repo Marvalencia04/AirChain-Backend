@@ -27,5 +27,16 @@ services:
       - .:/myapp  # Esto montará tu código fuente en el contenedor
     command: npm run dev  # Cambia el comando para usar nodemon
 
+  # Esta es la parte del frontend
+  client:
+    build:
+      context: ./public/$WEB_NAME   # Cambiar aquí para apuntar a la nueva ubicación de la web
+    ports:
+      - $WEB_LOCAL_PORT:$WEB_DOCKER_PORT
+    stdin_open: true
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    command: ["npm", "start"]
+
 volumes:
   mysqldb_data:
