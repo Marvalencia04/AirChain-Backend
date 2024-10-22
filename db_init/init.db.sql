@@ -1,8 +1,9 @@
 CREATE TABLE IF NOT EXISTS `Usuarios` (
   `ID` INT NOT NULL AUTO_INCREMENT UNIQUE,
   `Nombre` TEXT,
-  `Contraseña` TEXT,
+  `Contrasenya` TEXT,
   `Correo` TEXT,
+  `Verificado` BOOLEAN DEFAULT 0,
   PRIMARY KEY(`ID`)
 );
 
