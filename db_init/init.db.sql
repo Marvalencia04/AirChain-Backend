@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS `Usuarios` (
   `Nombre` TEXT,
   `Contrasenya` TEXT,
   `Correo` TEXT,
+  `Verificado` BOOLEAN DEFAULT 0,
   PRIMARY KEY(`ID`)
 );
 
