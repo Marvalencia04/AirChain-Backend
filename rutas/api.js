@@ -30,6 +30,16 @@ const apiRoutes = (pool) => {
     }
   });
 
+  router.get("/usuarios", async (req, res) => {
+    try {
+      const [rows] = await pool.query("SELECT * FROM Usuarios"); // Ejecutar la consulta
+      res.json(rows); // Enviar la respuesta con los datos obtenidos
+    } catch (error) {
+      console.error("Error en la consulta de gases:", error);
+      res.status(500).send("Error retrieving data"); // Enviar error si la consulta falla
+    }
+  });
+
   /**
    * @brief Ruta para insertar un nuevo gas en la base de datos.
    *
