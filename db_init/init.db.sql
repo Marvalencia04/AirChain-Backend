@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS `Usuarios` (
   `Correo` TEXT,
   `Telefono` TEXT,
   `Distancia` INT,
+  'Verificado' BOOLEAN,
   PRIMARY KEY(`ID-Usuarios`)
 );
 

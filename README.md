@@ -105,3 +105,5 @@ Este proyecto está licenciado bajo la [MIT License]. Si utilizas este código, 
 - [Airchain-Frontend](https://github.com/)
 - [Airchain-Arduino](https://github.com/)
 
+npm install bcrypt
+npm install nodemailer
