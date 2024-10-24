@@ -1,67 +1,107 @@
-# Biometria Web
 
-## Descripción del Proyecto
+# AirChain:Backend
 
-Este proyecto proporciona una solución para medir la concentración de dióxido de carbono (CO2) y la temperatura en ambientes interiores utilizando sensores analógicos. 
-Es útil para aplicaciones de monitoreo ambiental, sistemas de ventilación inteligente, y para garantizar un entorno saludable en espacios cerrados.
+## Tabla de Contenidos
+
+1. [Descripción](#descripción)
+2. [Características](#características)
+3. [Requisitos](#requisitos)
+4. [Configuración y Ejecución](#configuración-y-ejecución)
+5. [Créditos](#créditos)
+6. [Licencia](#licencia)
+7. [Repositorios relacionados](#repositorios)
+
+## Descripción
+
+Este proyecto proporciona una solución para medir la concentración de dióxido de carbono (CO2) y la temperatura en ambientes interiores utilizando sensores analógicos. Es útil para aplicaciones de monitoreo ambiental, sistemas de ventilación inteligente y para garantizar un entorno saludable en espacios cerrados.
+
+La aplicación ofrece:
+- **Gestión de datos de gases** mediante una **API RESTful**.
+- Soporte para consultas y entradas en la base de datos.
+- Middleware **CORS** para permitir acceso desde diferentes dominios.
+- Servir archivos estáticos y JSON para facilitar la integración y visualización de datos.
 
 ## Características
 
-- **API RESTful** para gestionar datos de gases.
-- Soporte para consultas y entradas a la base de datos.
-- Middleware de CORS para permitir el acceso desde diferentes dominios.
-- Servir archivos estáticos y JSON.
-
-## Tecnologías Utilizadas
-
-- **Node.js**: Entorno de ejecución de JavaScript del lado del servidor.
-- **Express**: Framework para crear aplicaciones web y API.
-- **MySQL**: Sistema de gestión de bases de datos relacional.
-- **Supertest**: Biblioteca para realizar pruebas HTTP en Node.js.
-- **Sinon**: Biblioteca para crear mocks y stubs en pruebas.
+- **API RESTful** para la gestión de datos de gases y otros parámetros ambientales.
+- **Soporte para consultas MySQL** a la base de datos, facilitando la extracción de datos históricos.
+- **Middleware CORS** para permitir el acceso seguro desde múltiples dominios.
+- **Servir archivos JSON y estáticos** desde el servidor, ofreciendo una interfaz sencilla para el consumo de datos por otras aplicaciones.
+- **Pruebas automáticas** con **Supertest** y **Sinon** para asegurar el correcto funcionamiento de la API.
 
 ## Requisitos
 
-- Node.js (>= 14.x)
-- MySQL
-- Dependencias definidas en `package.json`
+Para ejecutar este proyecto, necesitas:
+- **Node.js** (>= 14.x)
+- **MySQL**
+- Las dependencias definidas en `package.json`
 
-## Configuración del Proyecto
+### Dependencias del Proyecto
 
-1. Clonar el repositorio:
+En el archivo `package.json` encontrarás las siguientes dependencias clave:
+- **Express**: Para crear la API y gestionar rutas.
+- **MySQL**: Para la interacción con la base de datos.
+- **Supertest**: Para realizar pruebas HTTP.
+- **Sinon**: Para pruebas con mocks y stubs.
 
-   git clone https://github.com/Marvalencia04/Biometria-Web
+
+## Configuración y Ejecución
+
+Sigue estos pasos para configurar y ejecutar el proyecto:
+
+1. **Clonar este repositorio**:
+   ```bash
+   git clone https://github.com/Marvalencia04/AirChain-Backend
    cd biometria-web
+   ```
 
-2. Instalar las dependencias:
+2. **Instalar dependencias**:
+   Asegúrate de tener `npm` instalado y ejecuta el siguiente comando para instalar todas las dependencias del proyecto:
+   ```bash
+   npm install
+   ```
 
-    Asegúrate de tener npm instalado y ejecuta el siguiente comando para instalar todas las dependencias del proyecto:
+3. **Configurar el archivo `.env`**:
+   Crea un archivo `.env` en la raíz del proyecto y añade las siguientes variables:
 
-    npm install
+   ```bash
+   MYSQLDB_HOST=localhost
+   MYSQLDB_ROOT_PASSWORD=tu_contraseña
+   MYSQLDB_PORT=3306
+   MYSQLDB_DATABASE=tu_base_de_datos
+   NODE_DOCKER_PORT=3000
+   ```
 
-3. Configurar el archivo .env:
+   Asegúrate de reemplazar los valores con la configuración correspondiente a tu entorno.
 
-Crea un archivo .env en la raíz del proyecto y añade las siguientes variables:
+4. **Ejecutar la aplicación**:
+   Para iniciar la aplicación, utiliza el siguiente comando:
+   ```bash
+   npm start
+   ```
 
-    MYSQLDB_HOST=localhost
-    MYSQLDB_ROOT_PASSWORD=tu_contraseña
-    MYSQLDB_PORT=3306
-    MYSQLDB_DATABASE=tu_base_de_datos
-    NODE_DOCKER_PORT=3000
+   La aplicación se ejecutará en `http://localhost:3000` por defecto.
 
-    Asegúrate de reemplazar los valores con la configuración correspondiente a tu entorno.
+## Pruebas
 
-4. Ejecutar la Aplicación
+El proyecto incluye un conjunto de pruebas para verificar la correcta funcionalidad de la API. Para ejecutar las pruebas, usa el siguiente comando:
 
-Para iniciar la aplicación, utiliza el siguiente comando:
-
-npm start
-
-La aplicación se ejecutará en http://localhost:3000 por defecto.
-5. Ejecutar Tests
-
-Para ejecutar los tests de la aplicación, utiliza el siguiente comando:
-
+```bash
 npm test
+```
 
-Esto ejecutará las pruebas definidas en el proyecto utilizando Mocha y Chai.
+Las pruebas utilizan **Supertest** para simular solicitudes HTTP y **Sinon** para crear mocks y stubs de las dependencias.
+
+## Créditos
+
+Este proyecto ha sido desarrollado por el equipo de **Biometría Web**.
+
+## Licencia
+
+Este proyecto está licenciado bajo la [MIT License]. Si utilizas este código, por favor da el crédito correspondiente.
+
+## Repositorios relacionados
+- [Airchain-Android](https://github.com/)
+- [Airchain-Frontend](https://github.com/)
+- [Airchain-Arduino](https://github.com/)
+
