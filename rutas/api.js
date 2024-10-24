@@ -30,6 +30,16 @@ const apiRoutes = (pool) => {
     }
   });
 
+  router.get("/usuarios", async (req, res) => {
+    try {
+      const [rows] = await pool.query("SELECT * FROM Usuarios"); // Ejecutar la consulta
+      res.json(rows); // Enviar la respuesta con los datos obtenidos
+    } catch (error) {
+      console.error("Error en la consulta de gases:", error);
+      res.status(500).send("Error retrieving data"); // Enviar error si la consulta falla
+    }
+  });
+
   /**
    * @brief Ruta para insertar un nuevo gas en la base de datos.
    *
@@ -71,6 +81,58 @@ const apiRoutes = (pool) => {
       });
     }
   });
+
+
+    /**
+   * @brief Ruta para registrar un nuevo usuario en la base de datos.
+   *
+   * Esta ruta maneja las solicitudes POST a "/usuarios",
+   * extrayendo los parámetros del cuerpo de la solicitud e
+   * insertando un nuevo usuario en la base de datos.
+   *
+   * @param {Object} req Cuerpo de la solicitud que contiene los datos del usuario.
+   * @param {string} req.body.nombre El nombre del usuario.
+   * @param {string} req.body.apellidos Los apellidos del usuario.
+   * @param {string} req.body.email El correo electrónico del usuario.
+   * @param {string} req.body.contrasenya La contraseña del usuario.
+   * @param {Response} res Objeto de respuesta de Express para enviar la respuesta al cliente.
+   * @returns {void}
+   * @throws {Error} Si hay un problema al insertar el usuario en la base de datos.
+   */
+    router.post("/usuarios", async (req, res) => {
+      const { nombre, apellidos, correo, contrasenya } = req.body;
+  
+      console.log("Datos recibidos:", req.body); // Log para verificar los datos recibidos
+  
+      try {
+          // Asegúrate de que todos los datos estén presentes
+          if (!nombre || !apellidos || !correo || !contrasenya) {
+              return res.status(400).json({ error: "Faltan datos requeridos" });
+          }
+  
+          // Insertar el nuevo usuario en la base de datos
+          const [result] = await pool.query(
+              "INSERT INTO Usuarios (Nombre, Apellidos, Correo, Contrasenya, Verificado) VALUES (?, ?, ?, ?, ?)",
+              [nombre, apellidos, correo, contrasenya, 0] // Se inserta 0 en Verificado por defecto
+          );
+  
+          res.status(201).json({
+              id: result.insertId, // ID del nuevo usuario insertado
+              nombre,
+              apellidos,
+              correo,
+              verificado: 0, // Estado de verificación predeterminado
+          });
+      } catch (error) {
+          console.error("Error al registrar el usuario:", error);
+          res.status(500).json({
+              error: "Error al registrar el usuario",
+              details: error.message,
+          });
+      }
+  });
+  
+
 
   return router; // Retornar el enrutador con las rutas configuradas
 };
