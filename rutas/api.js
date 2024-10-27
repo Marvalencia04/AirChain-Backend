@@ -42,8 +42,6 @@ const apiRoutes = (pool) => {
       res.status(500).send("Error retrieving data"); // Enviar error si la consulta falla
     }
   });*/
-
-  // En tu archivo de rutas de la API (e.g., apiRoutes.js)
 router.get("/usuarios", async (req, res) => {
   const { Correo, Contrasenya } = req.query; // Obtener correo y contraseña desde la solicitud
 
