@@ -42,6 +42,7 @@ const apiRoutes = (pool) => {
       res.status(500).send("Error retrieving data"); // Enviar error si la consulta falla
     }
   });
+
   router.get("/usuarios", async (req, res) => {
     const { Correo, Contrasenya } = req.query; // Obtener correo y contraseña desde la solicitud
 
@@ -97,25 +98,7 @@ router.get("/usuario/:correo", async (req, res) => {
   }
 });
 
-// Ruta para actualizar los datos del usuario
-router.put("/usuarios", async (req, res) => {
-  const { correo } = req.params;
-  const { Nombre, Apellidos, Telefono, Contrasenya } = req.body;
 
-  try {
-      const [result] = await pool.query(
-          "UPDATE Usuarios SET Nombre = ?, Apellidos = ?, Telefono = ?, Contrasenya = ? WHERE Correo = ?",
-          [Nombre, Apellidos, Telefono, Contrasenya, correo]
-      );
-      if (result.affectedRows === 0) {
-          return res.status(404).json({ error: "Usuario no encontrado" });
-      }
-      res.json({ message: "Perfil actualizado correctamente" });
-  } catch (error) {
-      console.error("Error al actualizar el perfil:", error);
-      res.status(500).json({ error: "Error al actualizar el perfil" });
-  }
-});
 
 // Agregar en apiRoutes (por ejemplo, en apiRoutes.js)
 
@@ -164,20 +147,29 @@ router.put("/usuario/:correo/cambiar-contrasena", async (req, res) => {
   const { contrasenaActual, contrasenaNueva } = req.body;
 
   try {
-      // Primero, verifica si la contraseña actual es correcta
+      // Verificar si la contraseña actual es correcta
       const [usuario] = await pool.query(
           "SELECT Contrasenya FROM Usuarios WHERE Correo = ?",
           [correo]
       );
 
-      if (usuario.length === 0 || usuario[0].Contrasenya !== contrasenaActual) {
+      if (usuario.length === 0) {
+          return res.status(404).json({ error: "Usuario no encontrado" });
+      }
+
+      // Comparar la contraseña actual con la contraseña en la base de datos
+      const match = await bcrypt.compare(contrasenaActual, usuario[0].Contrasenya);
+      if (!match) {
           return res.status(401).json({ error: "La contraseña actual es incorrecta" });
       }
 
-      // Si la contraseña actual es correcta, actualiza a la nueva
+      // Encriptar la nueva contraseña
+      const hashedNewPassword = await bcrypt.hash(contrasenaNueva, 10);
+
+      // Actualizar la contraseña en la base de datos
       await pool.query(
           "UPDATE Usuarios SET Contrasenya = ? WHERE Correo = ?",
-          [contrasenaNueva, correo]
+          [hashedNewPassword, correo]
       );
 
       res.json({ message: "Contraseña actualizada correctamente" });
@@ -186,6 +178,7 @@ router.put("/usuario/:correo/cambiar-contrasena", async (req, res) => {
       res.status(500).json({ error: "Error al cambiar la contraseña" });
   }
 });
+
 
 
 
@@ -332,8 +325,9 @@ router.post("/medidas", async (req, res) => {
       });
     }
   });
+
    // En tu archivo de rutas de la API (e.g., apiRoutes.js)
-router.get("/usuarios", async (req, res) => {
+router.get("/usuarios2", async (req, res) => {
   const { Correo, Contrasenya } = req.query; // Obtener correo y contraseña desde la solicitud
 
   try {
@@ -350,113 +344,6 @@ router.get("/usuarios", async (req, res) => {
   } catch (error) {
       console.error("Error en la consulta de usuario:", error);
       res.status(500).send("Error retrieving user data");
-  }
-});
-
-
-
-  // Ruta para obtener los datos del usuario por su correo
-router.get("/usuario/:correo", async (req, res) => {
-  const { correo } = req.params;
-  try {
-      const [rows] = await pool.query("SELECT * FROM Usuarios WHERE Correo = ?", [correo]);
-      if (rows.length === 0) {
-          return res.status(404).json({ error: "Usuario no encontrado" });
-      }
-      res.json(rows[0]); // Retorna el primer usuario encontrado
-  } catch (error) {
-      console.error("Error al obtener el perfil del usuario:", error);
-      res.status(500).json({ error: "Error al obtener el perfil del usuario" });
-  }
-});
-
-// Ruta para actualizar los datos del usuario
-router.put("/usuarios", async (req, res) => {
-  const { correo } = req.params;
-  const { Nombre, Apellidos, Telefono, Contrasenya } = req.body;
-
-  try {
-      const [result] = await pool.query(
-          "UPDATE Usuarios SET Nombre = ?, Apellidos = ?, Telefono = ?, Contrasenya = ? WHERE Correo = ?",
-          [Nombre, Apellidos, Telefono, Contrasenya, correo]
-      );
-      if (result.affectedRows === 0) {
-          return res.status(404).json({ error: "Usuario no encontrado" });
-      }
-      res.json({ message: "Perfil actualizado correctamente" });
-  } catch (error) {
-      console.error("Error al actualizar el perfil:", error);
-      res.status(500).json({ error: "Error al actualizar el perfil" });
-  }
-});
-
-// Agregar en apiRoutes (por ejemplo, en apiRoutes.js)
-
-router.put("/usuario", async (req, res) => {
-  const { Correo, Nombre, Apellidos, } = req.body;
-
-  try {
-      const [result] = await pool.query(
-          "UPDATE Usuarios SET Nombre = ?, Apellidos = ? WHERE Correo = ?",
-          [Nombre, Apellidos, Correo]
-      );
-
-      res.status(200).json({ message: "Usuario actualizado correctamente" });
-  } catch (error) {
-      console.error("Error al actualizar usuario:", error);
-      res.status(500).json({ error: "Error al actualizar usuario" });
-  }
-});
-
-
-// En apiRoutes.js
-router.put("/usuario/telefono/:correo", async (req, res) => {
-  const { correo } = req.params;
-  const { Telefono } = req.body;
-
-  try {
-      const [result] = await pool.query(
-          "UPDATE Usuarios SET Telefono = ? WHERE Correo = ?",
-          [Telefono, correo]
-      );
-
-      if (result.affectedRows === 0) {
-          return res.status(404).json({ error: "Usuario no encontrado" });
-      }
-      res.json({ message: "Teléfono actualizado correctamente" });
-  } catch (error) {
-      console.error("Error al actualizar el teléfono:", error);
-      res.status(500).json({ error: "Error al actualizar el teléfono" });
-  }
-});
-
-
-// Ruta para cambiar la contraseña del usuario
-router.put("/usuario/:correo/cambiar-contrasena", async (req, res) => {
-  const { correo } = req.params;
-  const { contrasenaActual, contrasenaNueva } = req.body;
-
-  try {
-      // Primero, verifica si la contraseña actual es correcta
-      const [usuario] = await pool.query(
-          "SELECT Contrasenya FROM Usuarios WHERE Correo = ?",
-          [correo]
-      );
-
-      if (usuario.length === 0 || usuario[0].Contrasenya !== contrasenaActual) {
-          return res.status(401).json({ error: "La contraseña actual es incorrecta" });
-      }
-
-      // Si la contraseña actual es correcta, actualiza a la nueva
-      await pool.query(
-          "UPDATE Usuarios SET Contrasenya = ? WHERE Correo = ?",
-          [contrasenaNueva, correo]
-      );
-
-      res.json({ message: "Contraseña actualizada correctamente" });
-  } catch (error) {
-      console.error("Error al cambiar la contraseña:", error);
-      res.status(500).json({ error: "Error al cambiar la contraseña" });
   }
 });
 
