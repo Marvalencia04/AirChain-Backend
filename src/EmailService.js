@@ -4,12 +4,20 @@ class EmailService {
   constructor() {
     // Configurar el transporter de nodemailer para enviar correos
     this.transporter = nodemailer.createTransport({
-      service: "gmail", // Puedes cambiar el servicio si usas otro SMTP
-      auth: {
-        user: process.env.EMAIL_USER || "autonest30@gmail.com", // Utiliza variables de entorno
-        pass: process.env.EMAIL_PASS || "Autonest30AhoraEsPeronsal", // Cambia a variables de entorno para mayor seguridad
-      },
-    });
+
+        host: "sandbox.smtp.mailtrap.io",
+      
+        port: 2525,
+      
+        auth: {
+      
+          user: "6ad817685651b0",
+      
+          pass: "51bc5a46a28e79"
+      
+        }
+      
+      });
 
     // Verificar si la configuración de SMTP es correcta
     this.transporter.verify((error, success) => {
@@ -31,7 +39,8 @@ class EmailService {
    * @throws {Error} Si hay un problema al enviar el correo.
    */
   async enviarCorreo(destinatario, nombre, userId) {
-    const verificationLink = `http://localhost:3000/api/usuarios/verify/${userId}`; // Enlace de verificación
+    console.log("Enviando correo a:", userId);
+    const verificationLink = `http://localhost:4000/api/gases/usuarios/verify/${userId}`; // Enlace de verificación
 
     const mailOptions = {
       from: "autonest30@gmail.com", // Cambia esto por tu correo
