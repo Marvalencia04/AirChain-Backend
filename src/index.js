@@ -4,6 +4,7 @@ import { config } from "dotenv";
 import cors from "cors";
 import apiRoutes from "../rutas/api.js"; // Importar las rutas desde api.js
 
+
 // Cargar las variables de entorno desde el archivo .env
 config();
 
@@ -61,5 +62,8 @@ const createApp = (pool = null, port = process.env.NODE_DOCKER_PORT || 3000) => 
  * param: () -> app -> express.Application
  * @returns {express.Application}
  */
-const app = createApp(); // Cambiar según el entorno
+if (process.env.NODE_ENV !== 'test') {
+  const app = createApp(); // Cambiar según el entorno
+}
+
 export default createApp;
