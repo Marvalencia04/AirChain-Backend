@@ -33,7 +33,7 @@ const apiRoutes = (pool) => {
     }
   });
 
-  /*router.get("/usuarios", async (req, res) => {
+  router.get("/prueba", async (req, res) => {
     try {
       const [rows] = await pool.query("SELECT * FROM Usuarios"); // Ejecutar la consulta
       res.json(rows); // Enviar la respuesta con los datos obtenidos
@@ -41,26 +41,44 @@ const apiRoutes = (pool) => {
       console.error("Error en la consulta de gases:", error);
       res.status(500).send("Error retrieving data"); // Enviar error si la consulta falla
     }
-  });*/
-router.get("/usuarios", async (req, res) => {
-  const { Correo, Contrasenya } = req.query; // Obtener correo y contraseña desde la solicitud
+  });
+  router.get("/usuarios", async (req, res) => {
+    const { Correo, Contrasenya } = req.query; // Obtener correo y contraseña desde la solicitud
 
-  try {
-      const [rows] = await pool.query(
-          "SELECT * FROM Usuarios WHERE Correo = ? AND Contrasenya = ?",
-          [Correo, Contrasenya]
-      ); // Filtrar por correo y contraseña
+    try {
+        const [rows] = await pool.query(
+            "SELECT ID_Usuarios, Nombre, Apellidos, Correo, Contrasenya, Telefono, Verificado FROM Usuarios WHERE Correo = ?",
+            [Correo]
+        ); // Filtrar solo por correo
 
-      if (rows.length === 0) {
-          return res.status(401).json({ error: "Credenciales incorrectas" });
-      }
-      
-      res.json(rows[0]); // Enviar solo el usuario encontrado
-  } catch (error) {
-      console.error("Error en la consulta de usuario:", error);
-      res.status(500).send("Error retrieving user data");
-  }
+        if (rows.length === 0) {
+            return res.status(401).json({ error: "Credenciales incorrectas" });
+        }
+        
+        // Verificar la contraseña
+        const usuario = rows[0];
+        
+        // Aquí deberías comparar la contraseña hasheada
+        const match = await bcrypt.compare(Contrasenya, usuario.Contrasenya);
+        
+        if (!match) {
+            return res.status(401).json({ error: "Credenciales incorrectas" });
+        }
+
+        // Verificar si el usuario está verificado
+        if (usuario.Verificado === 0) {
+            return res.status(403).json({ error: "Cuenta no verificada. Por favor verifica tu cuenta antes de iniciar sesión." });
+        }
+        
+        // Si todo es correcto, enviar solo el usuario encontrado
+        res.json(usuario); // Enviar solo el usuario encontrado
+    } catch (error) {
+        console.error("Error en la consulta de usuario:", error);
+        res.status(500).send("Error retrieving user data");
+    }
 });
+
+
 
 
 
