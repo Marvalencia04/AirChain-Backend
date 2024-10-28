@@ -82,15 +82,6 @@ Sigue estos pasos para configurar y ejecutar el proyecto:
 
    La aplicación se ejecutará en `http://localhost:3000` por defecto.
 
-## Pruebas
-
-El proyecto incluye un conjunto de pruebas para verificar la correcta funcionalidad de la API. Para ejecutar las pruebas, usa el siguiente comando:
-
-```bash
-npm test
-```
-
-Las pruebas utilizan **Supertest** para simular solicitudes HTTP y **Sinon** para crear mocks y stubs de las dependencias.
 
 ## Créditos
 
