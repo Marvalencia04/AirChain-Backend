@@ -1,3 +1,14 @@
+// api.js
+
+//------------------------------------------------------------------
+//
+// Emilio Sánchez Granado
+// Marcos Martinez Yuste
+// 28/10/24
+//
+//-------------------------------------------------------------------
+
+
 import { Router } from "express";
 import bcrypt from 'bcryptjs';// Para cifrar contraseñas
 import EmailService from "../src/EmailService.js";
@@ -13,6 +24,8 @@ const apiRoutes = (pool) => {
   const router = Router();
   // Crear una instancia de EmailService
   const emailService = new EmailService();
+  
+//------------------------------------------------------------------------------------------------  
   /**
    * @brief Ruta para obtener datos de gases desde la base de datos.
    *
@@ -33,6 +46,16 @@ const apiRoutes = (pool) => {
     }
   });
 
+//------------------------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------------------------
+
+    /**
+   * @brief Ruta de prueba para obtener datos de usuarios desde la base de datos.
+   * 
+   * @returns {void}
+   * @throws {Error} Si hay un problema en la consulta de la base de datos.
+   */
   router.get("/prueba", async (req, res) => {
     try {
       const [rows] = await pool.query("SELECT * FROM Usuarios"); // Ejecutar la consulta
@@ -42,7 +65,20 @@ const apiRoutes = (pool) => {
       res.status(500).send("Error retrieving data"); // Enviar error si la consulta falla
     }
   });
+//------------------------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------------------------
+  /**
+   * @brief Ruta para verificar credenciales de usuario y autenticación.
+   *
+   * Filtra por correo electrónico y compara la contraseña con la cifrada en la base de datos.
+   * 
+   * @param {Object} req Objeto de solicitud con las credenciales.
+   * @param {string} req.query.Correo Correo del usuario.
+   * @param {string} req.query.Contrasenya Contraseña del usuario.
+   * @returns {Object} Objeto JSON con los datos del usuario o un mensaje de error.
+   * @throws {Error} Si las credenciales no son correctas o hay problemas de consulta.
+   */
   router.get("/usuarios", async (req, res) => {
     const { Correo, Contrasenya } = req.query; // Obtener correo y contraseña desde la solicitud
 
@@ -78,11 +114,18 @@ const apiRoutes = (pool) => {
         res.status(500).send("Error retrieving user data");
     }
 });
+//------------------------------------------------------------------------------------------------
 
 
 
-
-
+//------------------------------------------------------------------------------------------------
+/**
+ * @brief Ruta para obtener los datos del usuario por su correo electrónico.
+ * @param {string} req.params.correo - El correo del usuario a buscar en la base de datos.
+ * @returns {Object} JSON con los datos del usuario si se encuentra en la base de datos.
+ * @throws Retorna un código de error 404 si el usuario no se encuentra, 
+ *         o 500 si ocurre un error de servidor durante la operación.
+ */
   // Ruta para obtener los datos del usuario por su correo
 router.get("/usuario/:correo", async (req, res) => {
   const { correo } = req.params;
@@ -97,11 +140,18 @@ router.get("/usuario/:correo", async (req, res) => {
       res.status(500).json({ error: "Error al obtener el perfil del usuario" });
   }
 });
+//------------------------------------------------------------------------------------------------
 
 
-
-// Agregar en apiRoutes (por ejemplo, en apiRoutes.js)
-
+//------------------------------------------------------------------------------------------------
+/**
+ * @brief Ruta para actualizar el nombre y los apellidos del usuario.
+ * @param {string} req.body.Correo - El correo del usuario para identificarlo en la base de datos.
+ * @param {string} req.body.Nombre - El nuevo nombre del usuario.
+ * @param {string} req.body.Apellidos - Los nuevos apellidos del usuario.
+ * @returns {Object} JSON con un mensaje de éxito si el usuario es actualizado correctamente.
+ * @throws Retorna un código de error 500 si ocurre un problema en el servidor.
+ */
 router.put("/usuario", async (req, res) => {
   const { Correo, Nombre, Apellidos, } = req.body;
 
@@ -117,9 +167,18 @@ router.put("/usuario", async (req, res) => {
       res.status(500).json({ error: "Error al actualizar usuario" });
   }
 });
+//------------------------------------------------------------------------------------------------
 
 
-// En apiRoutes.js
+//------------------------------------------------------------------------------------------------
+/**
+ * @brief Ruta para actualizar el número de teléfono del usuario según su correo electrónico.
+ * @param {string} req.params.correo - El correo del usuario a actualizar.
+ * @param {string} req.body.Telefono - El nuevo número de teléfono del usuario.
+ * @returns {Object} JSON con un mensaje de éxito si el teléfono es actualizado correctamente.
+ * @throws Retorna un código de error 404 si el usuario no se encuentra, 
+ *         o 500 si ocurre un problema en el servidor.
+ */
 router.put("/usuario/telefono/:correo", async (req, res) => {
   const { correo } = req.params;
   const { Telefono } = req.body;
@@ -139,8 +198,18 @@ router.put("/usuario/telefono/:correo", async (req, res) => {
       res.status(500).json({ error: "Error al actualizar el teléfono" });
   }
 });
+//------------------------------------------------------------------------------------------------
 
-
+//------------------------------------------------------------------------------------------------
+/**
+ * @brief Ruta para cambiar la contraseña del usuario.
+ * @param {string} req.params.correo - El correo del usuario para identificarlo en la base de datos.
+ * @param {string} req.body.contrasenaActual - La contraseña actual del usuario para la verificación.
+ * @param {string} req.body.contrasenaNueva - La nueva contraseña del usuario a establecer.
+ * @returns {Object} JSON con un mensaje de éxito si la contraseña es cambiada correctamente.
+ * @throws Retorna un código de error 404 si el usuario no se encuentra, 
+ *         401 si la contraseña actual no es correcta, o 500 si ocurre un problema en el servidor.
+ */
 // Ruta para cambiar la contraseña del usuario
 router.put("/usuario/:correo/cambiar-contrasena", async (req, res) => {
   const { correo } = req.params;
@@ -178,11 +247,11 @@ router.put("/usuario/:correo/cambiar-contrasena", async (req, res) => {
       res.status(500).json({ error: "Error al cambiar la contraseña" });
   }
 });
+//------------------------------------------------------------------------------------------------
 
 
 
-
-
+//------------------------------------------------------------------------------------------------
   /**
    * @brief Ruta para insertar un nuevo gas en la base de datos.
    *
@@ -234,8 +303,10 @@ router.post("/medidas", async (req, res) => {
     });
   }
 });
+//------------------------------------------------------------------------------------------------
 
 
+//------------------------------------------------------------------------------------------------
     /**
    * @brief Ruta para registrar un nuevo usuario en la base de datos.
    *
@@ -299,7 +370,17 @@ router.post("/medidas", async (req, res) => {
       });
     }
   });
+//------------------------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------------------------
+/**
+ * @brief Ruta para verificar la cuenta del usuario, cambiando su estado de verificación en la base de datos.
+ * @param {string} req.params.userId - El ID del usuario a verificar en la base de datos.
+ * @returns {Object|string} Mensaje de éxito si la cuenta es verificada correctamente. También se puede redirigir a una página de éxito.
+ * @throws Retorna un código de error 404 si el usuario no se encuentra en la base de datos, 
+ *         o 500 si ocurre un problema en el servidor durante la operación.
+ */
   // Ruta para verificar la cuenta del usuario
   router.get("/usuarios/verify/:userId", async (req, res) => {
     const { userId } = req.params;
@@ -325,25 +406,61 @@ router.post("/medidas", async (req, res) => {
       });
     }
   });
+//------------------------------------------------------------------------------------------------
 
-   // En tu archivo de rutas de la API (e.g., apiRoutes.js)
-router.get("/usuarios2", async (req, res) => {
-  const { Correo, Contrasenya } = req.query; // Obtener correo y contraseña desde la solicitud
+
+
+
+router.get("/usuariosMovil", async (req, res) => {
+  const { Correo } = req.query;
+  try {
+    if (Correo) {
+      const [rows] = await pool.query("SELECT * FROM Usuarios WHERE Correo = ?", [Correo]);
+      if (rows.length === 0) {
+        res.status(404).json({ error: "Usuario no encontrado" });
+      } else {
+        res.json(rows[0]);
+      }
+    } else {
+      const [rows] = await pool.query("SELECT * FROM Usuarios");
+      res.json(rows);
+    }
+  } catch (error) {
+    console.error('Error en la consulta de usuarios:', error);
+    res.status(500).send("Error retrieving user");
+  }
+});
+
+
+router.put("/usuariosMovil", async (req, res) => {
+  const { Nombre, Apellidos, Correo, Contrasenya, Telefono } = req.body;
 
   try {
-      const [rows] = await pool.query(
-          "SELECT * FROM Usuarios WHERE Correo = ? AND Contrasenya = ?",
-          [Correo, Contrasenya]
-      ); // Filtrar por correo y contraseña
+    let hashedPassword = null;
 
-      if (rows.length === 0) {
-          return res.status(401).json({ error: "Credenciales incorrectas" });
-      }
-      
-      res.json(rows[0]); // Enviar solo el usuario encontrado
+    // Si se proporciona una nueva contraseña, encriptarla
+    if (Contrasenya) {
+      hashedPassword = await bcrypt.hash(Contrasenya, 10);
+    }
+
+    // Actualizar el usuario en la base de datos, incluyendo la contraseña si fue proporcionada
+    const query = hashedPassword
+      ? "UPDATE Usuarios SET Nombre = ?, Apellidos = ?, Contrasenya = ?, Telefono = ? WHERE Correo = ?"
+      : "UPDATE Usuarios SET Nombre = ?, Apellidos = ?, Telefono = ? WHERE Correo = ?";
+    const params = hashedPassword
+      ? [Nombre, Apellidos, hashedPassword, Correo, Telefono]
+      : [Nombre, Apellidos, Correo, Telefono];
+
+    const [result] = await pool.query(query, params);
+
+    if (result.affectedRows > 0) {
+      res.status(200).json({ message: "Usuario actualizado correctamente" });
+    } else {
+      res.status(404).json({ error: "Usuario no encontrado" });
+    }
   } catch (error) {
-      console.error("Error en la consulta de usuario:", error);
-      res.status(500).send("Error retrieving user data");
+    console.error("Error al actualizar usuario:", error);
+    res.status(500).send("Error actualizando los datos");
   }
 });
 
