@@ -231,7 +231,9 @@ router.put("/usuario/:correo/cambiar-contrasena", async (req, res) => {
       if (!match) {
           return res.status(401).json({ error: "La contraseña actual es incorrecta" });
       }
-
+      // Validar la contraseña
+      Criterios(contrasenya);
+      
       // Encriptar la nueva contraseña
       const hashedNewPassword = await bcrypt.hash(contrasenaNueva, 10);
 
@@ -333,7 +335,8 @@ router.post("/medidas", async (req, res) => {
       if (!nombre || !apellidos || !correo || !contrasenya || !telefono) { 
         return res.status(400).json({ error: "Faltan datos requeridos" });
       }
-  
+     // Validar la contraseña
+    Criterios(contrasenya);
       // Cifrar la contraseña antes de insertarla
       const hashedPassword = await bcrypt.hash(contrasenya, 10);
   
@@ -468,4 +471,19 @@ router.put("/usuariosMovil", async (req, res) => {
   return router; // Retornar el enrutador con las rutas configuradas
 };
 
-export default apiRoutes; 
+export default apiRoutes;
+
+function Criterios(password) {
+  if (
+    password.length < 8 ||
+    !/[a-z]/.test(password) ||
+    !/[A-Z]/.test(password) ||
+    !/[0-9]/.test(password) ||
+    !/[^A-Za-z0-9]/.test(password)
+  ) {
+    throw new Error("La contraseña debe tener al menos 8 caracteres, incluyendo letras mayúsculas, minúsculas, números y caracteres especiales.");
+  }
+  return true;
+}
+
+
