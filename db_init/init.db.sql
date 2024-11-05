@@ -27,8 +27,10 @@ CREATE TABLE IF NOT EXISTS `Sensor` (
   `Etiqueta` VARCHAR(255) NOT NULL,         -- Campo para la etiqueta o nombre del sensor
   `Usuario` INT NULL,                       -- Permitir que sea NULL hasta que el sensor se asigne a un usuario
   PRIMARY KEY (`ID_Sensor`),
+  UNIQUE (`Etiqueta`),                      -- Restringe la columna Etiqueta para que sea única
   FOREIGN KEY (`Usuario`) REFERENCES `Usuarios`(`ID_Usuarios`)
 );
+
 
 
 -- Finalmente, creamos la tabla de Medidas, que hace referencia a Gases y Sensor
