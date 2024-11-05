@@ -2,10 +2,13 @@ import express from "express";
 import { createPool } from "mysql2/promise";
 import { config } from "dotenv";
 import cors from "cors";
+//Lo nuevo
 import apiGETRoutes from "../rutas/apiGET.js"; // Importar las rutas GET
 import apiPOSTRoutes from "../rutas/apiPOST.js"; // Importar las rutas POST
 import apiPUTRoutes from "../rutas/apiPUT.js"; // Importar las rutas PUT
 import apiDELETERoutes from "../rutas/apiDELETE.js"; // Importar las rutas DELETE
+//Lo nuevo
+
 //import apiRoutes from "../rutas/api.js"; // Importar las rutas desde api.js
 
 // Cargar las variables de entorno desde el archivo .env
@@ -45,10 +48,13 @@ const createApp = (pool = null, port = process.env.NODE_DOCKER_PORT || 3000) => 
   app.use(express.json()); // Middleware para parsear el cuerpo de las solicitudes JSON
 
   // Usar las rutas de la API
+  //Lo nuevo
   app.use("/api/gases", apiGETRoutes(pool));   // Rutas GET
   app.use("/api/gases", apiPOSTRoutes(pool));  // Rutas POST
   app.use("/api/gases", apiPUTRoutes(pool));    // Rutas PUT
   app.use("/api/gases", apiDELETERoutes(pool)); // Rutas DELETE
+  //Lo nuevo
+  
   //app.use("/api/gases", apiRoutes(pool));
 
   console.log("Iniciando servidor en el puerto:", port);
