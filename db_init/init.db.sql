@@ -24,10 +24,12 @@ CREATE TABLE IF NOT EXISTS `Gases` (
 -- Ahora, creamos la tabla de Sensor, que hace referencia a Usuarios
 CREATE TABLE IF NOT EXISTS `Sensor` (
   `ID_Sensor` INT NOT NULL AUTO_INCREMENT,
-  `Usuario` INT NOT NULL,
-  PRIMARY KEY(`ID_Sensor`),
-  FOREIGN KEY(`Usuario`) REFERENCES `Usuarios`(`ID_Usuarios`)
+  `Etiqueta` VARCHAR(255) NOT NULL,         -- Campo para la etiqueta o nombre del sensor
+  `Usuario` INT NULL,                       -- Permitir que sea NULL hasta que el sensor se asigne a un usuario
+  PRIMARY KEY (`ID_Sensor`),
+  FOREIGN KEY (`Usuario`) REFERENCES `Usuarios`(`ID_Usuarios`)
 );
+
 
 -- Finalmente, creamos la tabla de Medidas, que hace referencia a Gases y Sensor
 CREATE TABLE IF NOT EXISTS `Medidas` (
