@@ -10,7 +10,7 @@
 
 import { Router } from "express";
 import bcrypt from 'bcryptjs'; // Para cifrar contraseñas
-import { Criterios } from '../Ayudas.js';
+import { Criterios } from './Ayudas.js';
 /**
  * @brief Crea las rutas relacionadas con la API de gases.
  *
@@ -81,7 +81,7 @@ const apiPUTRoutes = (pool) => {
       values.push(id);
 
       // Ejecutar la consulta de actualización
-      const query = `UPDATE Usuarios SET ${updates.join(", ")} WHERE ID = ?`;
+      const query = `UPDATE Usuarios SET ${updates.join(", ")} WHERE ID_Usuarios = ?`;
       const [result] = await pool.query(query, values);
 
       if (result.affectedRows === 0) {
