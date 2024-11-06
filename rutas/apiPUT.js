@@ -105,7 +105,55 @@ const apiPUTRoutes = (pool) => {
     }
   });
 //------------------------------------------------------------------------------------------------
-
+/**
+ * @brief Ruta para asignar un sensor a un usuario utilizando la etiqueta del sensor.
+ *
+ * Esta ruta maneja las solicitudes PUT a "/sensor/asignar" y permite asignar
+ * el sensor especificado por su etiqueta al usuario indicado.
+ *
+ * @param {Object} req Cuerpo de la solicitud que contiene la etiqueta del sensor y el ID del usuario.
+ * @param {string} req.body.etiqueta La etiqueta única del sensor.
+ * @param {number} req.body.id_usuario El ID del usuario al cual se asignará el sensor.
+ * @param {Response} res Objeto de respuesta de Express para enviar la respuesta al cliente.
+ * @returns {void}
+ * @throws {Error} Si hay un problema al asignar el sensor al usuario en la base de datos.
+ */
+router.put('/sensor/:etiqueta', async (req, res) => {
+    const { etiqueta } = req.params; // Obtener la etiqueta del sensor desde los parámetros de la ruta
+    const { id_usuario } = req.body; // Obtener el ID del usuario desde el cuerpo de la solicitud
+  
+    try {
+      // Validar que el id_usuario esté presente en el cuerpo de la solicitud
+      if (!id_usuario) {
+        return res.status(400).json({ error: 'El campo id_usuario es requerido' });
+      }
+  
+      // Actualizar el sensor para asignarle el id_usuario basándose en la etiqueta
+      const [result] = await pool.query(
+        'UPDATE Sensor SET Usuario = ? WHERE Etiqueta = ?',
+        [id_usuario, etiqueta]
+      );
+  
+      // Comprobar si se actualizó alguna fila
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: 'Sensor no encontrado o no se pudo actualizar' });
+      }
+  
+      // Responder con éxito si el sensor fue actualizado
+      res.status(200).json({
+        message: 'Usuario asignado al sensor exitosamente',
+        etiqueta,
+        id_usuario
+      });
+    } catch (error) {
+      console.error('Error al asignar el usuario al sensor:', error);
+      res.status(500).json({
+        error: 'Error al asignar el usuario al sensor en la base de datos',
+        details: error.message
+      });
+    }
+  });
+  
   return router; // Retornar el enrutador con las rutas configuradas
 };
 

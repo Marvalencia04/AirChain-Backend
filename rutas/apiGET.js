@@ -193,6 +193,48 @@ router.get("/usuariosMovil", async (req, res) => {
     }
   });
 //------------------------------------------------------------------------------------------------
+/**
+ * @brief Ruta para obtener todos los sensores asociados a un usuario en la base de datos.
+ *
+ * Esta ruta maneja las solicitudes GET a "/sensores/:id_usuario",
+ * extrayendo el ID del usuario de los parámetros de la ruta y
+ * devolviendo todos los sensores que estén asociados a dicho usuario.
+ *
+ * @param {Object} req Parámetros de la solicitud que contienen el ID del usuario.
+ * @param {number} req.params.id_usuario El ID del usuario cuyos sensores se desean consultar.
+ * @param {Response} res Objeto de respuesta de Express para enviar la respuesta al cliente.
+ * @returns {void}
+ * @throws {Error} Si hay un problema al buscar los sensores en la base de datos.
+ */
+router.get('/sensor/:id_usuario', async (req, res) => {
+    const { id_usuario } = req.params; // Obtener el ID del usuario desde los parámetros de la ruta
+  
+    try {
+      // Consulta para obtener todos los sensores que tengan el ID del usuario
+      const [sensores] = await pool.query(
+        'SELECT * FROM Sensor WHERE Usuario = ?',
+        [id_usuario]
+      );
+  
+      // Comprobar si se encontró algún sensor
+      if (sensores.length === 0) {
+        return res.status(404).json({ message: 'No se encontraron sensores para este usuario' });
+      }
+  
+      // Responder con la lista de sensores encontrados
+      res.status(200).json({
+        message: 'Sensores encontrados',
+        sensores
+      });
+    } catch (error) {
+      console.error('Error al buscar sensores para el usuario:', error);
+      res.status(500).json({
+        error: 'Error al buscar sensores en la base de datos',
+        details: error.message
+      });
+    }
+  });
+  
   return router; // Retornar el enrutador con las rutas configuradas
 };
 
