@@ -6,7 +6,7 @@ import cors from "cors";
 import apiGETRoutes from "../rutas/apiGET.js"; // Importar las rutas GET
 import apiPOSTRoutes from "../rutas/apiPOST.js"; // Importar las rutas POST
 import apiPUTRoutes from "../rutas/apiPUT.js"; // Importar las rutas PUT
-import apiDELETERoutes from "../rutas/apiDELETE.js"; // Importar las rutas DELETE
+//import apiDELETERoutes from "../rutas/apiDELETE.js"; // Importar las rutas DELETE
 //Lo nuevo
 
 //import apiRoutes from "../rutas/api.js"; // Importar las rutas desde api.js
@@ -52,7 +52,7 @@ const createApp = (pool = null, port = process.env.NODE_DOCKER_PORT || 3000) => 
   app.use("/api/gases", apiGETRoutes(pool));   // Rutas GET
   app.use("/api/gases", apiPOSTRoutes(pool));  // Rutas POST
   app.use("/api/gases", apiPUTRoutes(pool));    // Rutas PUT
-  app.use("/api/gases", apiDELETERoutes(pool)); // Rutas DELETE
+  //app.use("/api/gases", apiDELETERoutes(pool)); // Rutas DELETE
   //Lo nuevo
   
   //app.use("/api/gases", apiRoutes(pool));
