@@ -20,8 +20,6 @@ import bcrypt from 'bcryptjs';// Para cifrar contraseñas
  */
 const apiGETRoutes = (pool) => {
   const router = Router();
-  // Crear una instancia de EmailService
-  const emailService = new EmailService();
   
 //------------------------------------------------------------------------------------------------  
   /**
@@ -161,7 +159,82 @@ router.get("/usuariosMovil", async (req, res) => {
     res.status(500).send("Error retrieving user");
   }
 });
+//------------------------------------------------------------------------------------------------
+/**
+ * @brief Ruta para verificar la cuenta del usuario, cambiando su estado de verificación en la base de datos.
+ * @param {string} req.params.userId - El ID del usuario a verificar en la base de datos.
+ * @returns {Object|string} Mensaje de éxito si la cuenta es verificada correctamente. También se puede redirigir a una página de éxito.
+ * @throws Retorna un código de error 404 si el usuario no se encuentra en la base de datos, 
+ *         o 500 si ocurre un problema en el servidor durante la operación.
+ */
+  // Ruta para verificar la cuenta del usuario
+  router.get("/usuarios/verify/:userId", async (req, res) => {
+    const { userId } = req.params;
 
+    try {
+      // Actualizar el estado de verificación del usuario
+      const [result] = await pool.query(
+        "UPDATE Usuarios SET Verificado = 1 WHERE ID_Usuarios = ?",
+        [userId]
+      );
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: "Usuario no encontrado" });
+      }
+
+      // Redirigir a una página de éxito o enviar un mensaje de confirmación
+      res.send("¡Cuenta verificada exitosamente!"); // Redirigir a una página si tienes frontend
+    } catch (error) {
+      console.error("Error al verificar el usuario:", error);
+      res.status(500).json({
+        error: "Error al verificar el usuario",
+        details: error.message,
+      });
+    }
+  });
+//------------------------------------------------------------------------------------------------
+/**
+ * @brief Ruta para obtener todos los sensores asociados a un usuario en la base de datos.
+ *
+ * Esta ruta maneja las solicitudes GET a "/sensores/:id_usuario",
+ * extrayendo el ID del usuario de los parámetros de la ruta y
+ * devolviendo todos los sensores que estén asociados a dicho usuario.
+ *
+ * @param {Object} req Parámetros de la solicitud que contienen el ID del usuario.
+ * @param {number} req.params.id_usuario El ID del usuario cuyos sensores se desean consultar.
+ * @param {Response} res Objeto de respuesta de Express para enviar la respuesta al cliente.
+ * @returns {void}
+ * @throws {Error} Si hay un problema al buscar los sensores en la base de datos.
+ */
+router.get('/sensor/:id_usuario', async (req, res) => {
+    const { id_usuario } = req.params; // Obtener el ID del usuario desde los parámetros de la ruta
+  
+    try {
+      // Consulta para obtener todos los sensores que tengan el ID del usuario
+      const [sensores] = await pool.query(
+        'SELECT * FROM Sensor WHERE Usuario = ?',
+        [id_usuario]
+      );
+  
+      // Comprobar si se encontró algún sensor
+      if (sensores.length === 0) {
+        return res.status(404).json({ message: 'No se encontraron sensores para este usuario' });
+      }
+  
+      // Responder con la lista de sensores encontrados
+      res.status(200).json({
+        message: 'Sensores encontrados',
+        sensores
+      });
+    } catch (error) {
+      console.error('Error al buscar sensores para el usuario:', error);
+      res.status(500).json({
+        error: 'Error al buscar sensores en la base de datos',
+        details: error.message
+      });
+    }
+  });
+  
   return router; // Retornar el enrutador con las rutas configuradas
 };
 

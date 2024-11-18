@@ -46,3 +46,5 @@ function generarEtiquetaAleatoria(longitud = 8) {
       res.status(500).json({ error: 'Error al crear el sensor en la base de datos' });
     }
   });
+
+  //

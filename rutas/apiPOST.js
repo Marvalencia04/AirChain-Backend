@@ -11,7 +11,7 @@
 import { Router } from "express";
 import bcrypt from 'bcryptjs'; // Para cifrar contraseñas
 import EmailService from "../src/EmailService.js";
-import { Criterios } from '../Ayudas.js';
+import { Criterios } from './Ayudas.js';
 /**
  * @brief Crea las rutas relacionadas con la API de gases.
  *
@@ -144,7 +144,61 @@ const apiPOSTRoutes = (pool) => {
     }
   });
 //------------------------------------------------------------------------------------------------
-
+/**
+ * @brief Ruta para crear un nuevo sensor en la base de datos sin usuario asignado.
+ *
+ * Esta ruta maneja las solicitudes POST a "/sensor" y genera una etiqueta
+ * única para cada sensor antes de insertarlo en la base de datos.
+ *
+ * @param {Object} req Cuerpo vacío de la solicitud.
+ * @param {Response} res Objeto de respuesta de Express para enviar la respuesta al cliente.
+ * @returns {void}
+ * @throws {Error} Si hay un problema al crear el sensor en la base de datos.
+ */
+router.post('/sensor', async (req, res) => {
+    try {
+      let etiqueta;
+      let insertado = false;
+      let result;
+  
+      // Bucle para intentar insertar un sensor con etiqueta única
+      while (!insertado) {
+        // Generar una etiqueta aleatoria
+        etiqueta = Array.from({ length: 8 }, () =>
+          'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'.charAt(
+            Math.floor(Math.random() * 62)
+          )
+        ).join('');
+  
+        try {
+          // Intentar insertar el sensor en la base de datos
+          [result] = await pool.query(
+            'INSERT INTO Sensor (Etiqueta, Usuario) VALUES (?, NULL)', // Usa el marcador de parámetro ?
+            [etiqueta] // Pasa la etiqueta como un valor de parámetro
+          );
+          insertado = true; // Si la inserción es exitosa, marcar como insertado
+        } catch (error) {
+          if (error.code === 'ER_DUP_ENTRY') {
+            console.log(`Conflicto de etiqueta: ${etiqueta} ya existe, generando una nueva...`);
+            // Si la etiqueta ya existe, el ciclo se repetirá para generar una nueva
+          } else {
+            throw error; // Si es otro tipo de error, lanzarlo
+          }
+        }
+      }
+  
+      // Responder con éxito y la información del sensor
+      res.status(201).json({
+        message: 'Sensor creado exitosamente',
+        id_sensor: result.insertId,
+        etiqueta
+      });
+    } catch (error) {
+      console.error('Error al crear el sensor:', error);
+      res.status(500).json({ error: 'Error al crear el sensor en la base de datos' });
+    }
+  });  
+  
   return router; // Retornar el enrutador con las rutas configuradas
 };
 
