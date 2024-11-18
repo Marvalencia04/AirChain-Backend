@@ -11,7 +11,7 @@
 import { Router } from "express";
 import bcrypt from 'bcryptjs'; // Para cifrar contraseñas
 import EmailService from "../src/EmailService.js";
-import { Criterios } from './Ayudas.js';
+import { Criterios } from '../rutas/Ayudas.js';
 /**
  * @brief Crea las rutas relacionadas con la API de gases.
  *
