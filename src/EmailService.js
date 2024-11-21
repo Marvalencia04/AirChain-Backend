@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import logo from '../public/logo.jpg';
+//import logo from '../public/logo.jpg';
 class EmailService {
   constructor() {
     // Configurar el transporter de nodemailer para enviar correos
@@ -100,7 +100,6 @@ class EmailService {
         <body>
           <div class="container">
             <div class="header">
-              <img src="${logo}" alt="Logo de Airchain">
             </div>
             <div class="content">
               <h1>¡Hola ${nombre}!</h1>
