@@ -8,6 +8,8 @@ CREATE TABLE IF NOT EXISTS `Usuarios` (
   `Telefono` VARCHAR(20),
   `Distancia` INT DEFAULT 0,
   `Verificado` INT DEFAULT 0,
+  `total_distance_today` DECIMAL(10, 2) DEFAULT 0,
+  `last_updated` DATE NOT NULL DEFAULT CURRENT_DATE,
   PRIMARY KEY(`ID_Usuarios`)
 );
 
@@ -47,12 +49,4 @@ CREATE TABLE IF NOT EXISTS `Medidas` (
   FOREIGN KEY(`Sensor`) REFERENCES `Sensor`(`ID_Sensor`)
 );
 
-
-CREATE TABLE IF NOT EXISTS `Distancia` (
-    `id` INT AUTO_INCREMENT PRIMARY KEY,
-    `user_id` INT NOT NULL,
-    `total_distance_today` DECIMAL(10, 2) DEFAULT 0,
-    `last_updated` DATE NOT NULL DEFAULT CURRENT_DATE,
-    FOREIGN KEY (`user_id`) REFERENCES `Usuarios`(`ID_Usuarios`)
-);
 
