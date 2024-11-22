@@ -45,6 +45,18 @@ const apiGETRoutes = (pool) => {
 
 //------------------------------------------------------------------------------------------------
 
+
+router.get("/datosAdmin", async (req, res) => {
+  try {
+    const [rows] = await pool.query("SELECT s.ID_Sensor, u.Nombre AS Propietario, MAX(m.Hora) AS Ultima_Medida, MAX(CASE WHEN m.Gas = 'Ozono' THEN m.Valor END) AS Ozono, MAX(CASE WHEN m.Gas = 'Dióxido de Nitrógeno' THEN m.Valor END) AS Dioxido_Nitrogeno, MAX(CASE WHEN m.Gas = 'Monóxido de Carbono' THEN m.Valor END) AS Monoxido_Carbono FROM Sensor s LEFT JOIN Usuarios u ON s.Usuario = u.ID_Usuarios LEFT JOIN Medidas m ON s.ID_Sensor = m.Sensor GROUP BY s.ID_Sensor, u.Nombre;");
+    res.json(rows);
+  } catch (error) {
+    console.error("Error en datosAdmin:", error);
+    res.status(500).send("Error retrieving admin data");
+  }
+});
+
+
 //------------------------------------------------------------------------------------------------
 
     /**
