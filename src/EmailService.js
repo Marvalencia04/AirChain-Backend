@@ -99,6 +99,7 @@ class EmailService {
         </head>
         <body>
           <div class="container">
+            <img src="${logo}" alt="Logo de Airchain">
             <div class="header">
 <<<<<<< Updated upstream
 =======
