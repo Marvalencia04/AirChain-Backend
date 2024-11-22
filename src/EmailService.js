@@ -10,7 +10,7 @@ class EmailService {
         user: "6ad817685651b0",
 
         pass: "51bc5a46a28e79",
-      },
+      }
     });
 
     // Verificar si la configuración de SMTP es correcta
@@ -99,12 +99,7 @@ class EmailService {
         </head>
         <body>
           <div class="container">
-            <img src="${logo}" alt="Logo de Airchain">
             <div class="header">
-<<<<<<< Updated upstream
-=======
-              
->>>>>>> Stashed changes
             </div>
             <div class="content">
               <h1>¡Hola ${nombre}!</h1>
