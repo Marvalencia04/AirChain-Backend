@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-//import logo from '../public/logo.jpg';
+
 class EmailService {
   constructor() {
     // Configurar el transporter de nodemailer para enviar correos
@@ -100,6 +100,10 @@ class EmailService {
         <body>
           <div class="container">
             <div class="header">
+<<<<<<< Updated upstream
+=======
+              
+>>>>>>> Stashed changes
             </div>
             <div class="content">
               <h1>¡Hola ${nombre}!</h1>
