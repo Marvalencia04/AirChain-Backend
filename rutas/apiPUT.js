@@ -40,70 +40,67 @@ const apiPUTRoutes = (pool) => {
    * @returns {void}
    * @throws {Error} Si hay un problema al actualizar el usuario en la base de datos.
    */
-  router.put("/usuarios/:id", async (req, res) => {
-    const { id } = req.params; // Obtener el ID del usuario
-    const { nombre, apellidos, correo, contrasenya, telefono } = req.body;
+// Ruta para actualizar los datos del usuario
+router.put("/usuario", async (req, res) => {
+  const { Correo, Nombre, Apellidos, Telefono } = req.body;
 
-    try {
-      // Validar que al menos un campo a actualizar esté presente
-      if (!nombre && !apellidos && !correo && !contrasenya && !telefono) {
-        return res.status(400).json({ error: "Faltan datos requeridos" });
-      }
-
-      // Construir la consulta de actualización
-      const updates = [];
-      const values = [];
-
-      if (nombre) {
-        updates.push("Nombre = ?");
-        values.push(nombre);
-      }
-      if (apellidos) {
-        updates.push("Apellidos = ?");
-        values.push(apellidos);
-      }
-      if (correo) {
-        updates.push("Correo = ?");
-        values.push(correo);
-      }
-      if (contrasenya) {
-        Criterios(contrasenya); // Validar la nueva contraseña
-        const hashedPassword = await bcrypt.hash(contrasenya, 10);
-        updates.push("Contrasenya = ?");
-        values.push(hashedPassword);
-      }
-      if (telefono) {
-        updates.push("Telefono = ?");
-        values.push(telefono);
-      }
-
-      // Añadir el ID al final de los valores
-      values.push(id);
-
-      // Ejecutar la consulta de actualización
-      const query = `UPDATE Usuarios SET ${updates.join(", ")} WHERE ID_Usuarios = ?`;
-      const [result] = await pool.query(query, values);
+  try {
+      const [result] = await pool.query(
+          "UPDATE Usuarios SET Nombre = ?, Apellidos = ?, Telefono = ? WHERE Correo = ?",
+          [Nombre, Apellidos, Telefono, Correo]
+      );
 
       if (result.affectedRows === 0) {
         return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+      res.status(200).json({ message: "Usuario actualizado correctamente" });
+  } catch (error) {
+      console.error("Error al actualizar usuario:", error);
+      res.status(500).json({ error: "Error al actualizar usuario" });
+  }
+});
+//------------------------------------------------------------------------------------------------
+
+router.put("/usuario/:correo/cambiar-contrasena", async (req, res) => {
+  const { correo } = req.params;
+  const { contrasenaActual, contrasenaNueva } = req.body;
+
+  try {
+      // Verificar si la contraseña actual es correcta
+      const [usuario] = await pool.query(
+          "SELECT Contrasenya FROM Usuarios WHERE Correo = ?",
+          [correo]
+      );
+
+      if (usuario.length === 0) {
+          return res.status(404).json({ error: "Usuario no encontrado" });
       }
 
-      res.status(200).json({
-        id,
-        nombre,
-        apellidos,
-        correo,
-        telefono,
-      });
+      // Comparar la contraseña actual con la contraseña en la base de datos
+      const match = await bcrypt.compare(contrasenaActual, usuario[0].Contrasenya);
+      if (!match) {
+          return res.status(401).json({ error: "La contraseña actual es incorrecta" });
+      }
+      // Validar la contraseña
+      Criterios(contrasenaNueva);
+      
+      // Encriptar la nueva contraseña
+      const hashedNewPassword = await bcrypt.hash(contrasenaNueva, 10);
 
-    } catch (error) {
-      console.error("Error al actualizar el usuario:", error);
-      res.status(500).json({
-        error: "Error al actualizar el usuario",
-        details: error.message,
-      });
-    }
-  });
+      // Actualizar la contraseña en la base de datos
+      await pool.query(
+          "UPDATE Usuarios SET Contrasenya = ? WHERE Correo = ?",
+          [hashedNewPassword, correo]
+      );
+
+      res.json({ message: "Contraseña actualizada correctamente" });
+  } catch (error) {
+      console.error("Error al cambiar la contraseña:", error);
+      res.status(500).json({ error: "Error al cambiar la contraseña" });
+  }
+});
+
 //------------------------------------------------------------------------------------------------
 /**
  * @brief Ruta para asignar un sensor a un usuario utilizando la etiqueta del sensor.
