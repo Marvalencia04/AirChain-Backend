@@ -199,8 +199,79 @@ router.post('/sensor', async (req, res) => {
     }
   });  
   
-  return router; // Retornar el enrutador con las rutas configuradas
+
+
+
+
+
+
+
+
+/**
+ * @brief Ruta para añadir la distancia recorrida a la base de datos.
+ *
+ * Esta ruta maneja las solicitudes POST a "/distancia",
+ * actualizando la distancia diaria total y la última fecha de actualización.
+ *
+ * @param {Object} req Cuerpo de la solicitud que contiene el ID del usuario y la distancia.
+ * @param {number} req.body.ID_Usuarios El ID del usuario.
+ * @param {number} req.body.distancia La distancia recorrida a añadir al total diario.
+ * @param {Response} res Objeto de respuesta de Express para enviar la respuesta al cliente.
+ * @returns {void}
+ * @throws {Error} Si hay un problema al actualizar la distancia en la base de datos.
+ */
+router.post("/distancia", async (req, res) => {
+  console.log("POST /distancia La ruta se llama");
+  const { ID_Usuarios, distancia } = req.body;
+
+  try {
+      // Validar que todos los campos requeridos estén presentes
+      if (!ID_Usuarios || distancia == null) {
+          return res.status(400).json({ error: "Faltan datos requeridos" });
+      }
+
+      // Buscar al usuario en la base de datos
+      const [rows] = await pool.query(
+          "SELECT total_distance_today, last_updated FROM Usuarios WHERE ID_Usuarios = ?",
+          [ID_Usuarios]
+      );
+
+      if (rows.length === 0) {
+          return res.status(404).json({ error: "Usuario no encontrado" });
+      }
+
+      const usuario = rows[0];
+      const hoy = new Date().toISOString().split("T")[0];
+      const ultimaActualizacion = usuario.last_updated ? new Date(usuario.last_updated).toISOString().split("T")[0] : null;
+
+      // Si no es hoy, resetea la distancia
+      let nuevaDistancia = usuario.total_distance_today;
+      if (ultimaActualizacion !== hoy) {
+          nuevaDistancia = 0;
+      }
+
+      //Añadir nueva distancia
+      nuevaDistancia += distancia;
+
+      //Actualizar base de datos
+      await pool.query(
+          "UPDATE Usuarios SET total_distance_today = ?, last_updated = ? WHERE ID_Usuarios = ?",
+          [nuevaDistancia, hoy, ID_Usuarios]
+      );
+
+      res.status(200).json({
+          message: "Distancia actualizada correctamente",
+          nuevaDistancia,
+      });
+  } catch (error) {
+      console.error("Error al actualizar la distancia:", error);
+      res.status(500).json({ error: "Error al actualizar la distancia" });
+  }
+});
+
+
+
+return router; // Retornar el enrutador con las rutas configuradas
 };
 
 export default apiPOSTRoutes;
-
