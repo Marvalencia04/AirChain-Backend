@@ -54,6 +54,12 @@ const createApp = (pool = null, port = process.env.NODE_DOCKER_PORT || 3000) => 
   app.use("/api/gases", apiPUTRoutes(pool));    // Rutas PUT
   //app.use("/api/gases", apiDELETERoutes(pool)); // Rutas DELETE
   //Lo nuevo
+  app.use((req, res) => {
+    console.log(`Solicitud no manejada: ${req.method} ${req.path}`);
+    console.log(`Encabezado de solicitud:`, req.headers);
+    res.status(404).json({ error: `camino ${req.path} extraviado` });
+});
+
 
   //app.use("/api/gases", apiRoutes(pool));
 

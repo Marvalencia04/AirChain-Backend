@@ -9,9 +9,9 @@ CREATE TABLE IF NOT EXISTS `Usuarios` (
   `Telefono` VARCHAR(20),
   `Distancia` INT DEFAULT 0,
   `Verificado` INT DEFAULT 0,
-  `total_distance_today` DECIMAL(10, 2) DEFAULT 0,
-  `last_updated` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY(`ID_Usuarios`)
+  `total_distance_today` DECIMAL(10, 2) DEFAULT 0.00,
+  `last_updated` DATE NOT NULL DEFAULT CURRENT_DATE(),
+  PRIMARY KEY (`ID_Usuarios`)
 );
 
 
