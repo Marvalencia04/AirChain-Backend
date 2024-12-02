@@ -1,17 +1,19 @@
 -- Primero, creamos la tabla de Usuarios
 CREATE TABLE IF NOT EXISTS `Usuarios` (
-  `ID_Usuarios` INT NOT NULL AUTO_INCREMENT UNIQUE,
+  `ID_Usuarios` INT NOT NULL AUTO_INCREMENT,
+  `ID_Biometrico` VARCHAR(255) UNIQUE,
   `Nombre` VARCHAR(255),
   `Apellidos` VARCHAR(255),
   `Contrasenya` VARCHAR(255),
-  `Correo` VARCHAR(255),
+  `Correo` VARCHAR(255) UNIQUE,
   `Telefono` VARCHAR(20),
   `Distancia` INT DEFAULT 0,
   `Verificado` INT DEFAULT 0,
   `total_distance_today` DECIMAL(10, 2) DEFAULT 0,
-  `last_updated` DATE NOT NULL DEFAULT CURRENT_DATE,
+  `last_updated` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY(`ID_Usuarios`)
 );
+
 
 -- Luego, creamos la tabla de Gases
 CREATE TABLE IF NOT EXISTS `Gases` (

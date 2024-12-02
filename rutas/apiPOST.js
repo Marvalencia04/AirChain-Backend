@@ -197,7 +197,38 @@ router.post('/sensor', async (req, res) => {
       console.error('Error al crear el sensor:', error);
       res.status(500).json({ error: 'Error al crear el sensor en la base de datos' });
     }
-  });  
+  });
+  
+  /**
+ * @brief Ruta para registrar el identificador biométrico de un usuario.
+ * 
+ * @param {string} req.body.Correo - El correo del usuario.
+ * @param {string} req.body.ID_Biometrico - El identificador biométrico generado.
+ * @returns {Object} JSON indicando éxito o error.
+ */
+router.post("/usuarios/biometrico", async (req, res) => {
+  const { Correo, ID_Biometrico } = req.body;
+
+  if (!Correo || !ID_Biometrico) {
+    return res.status(400).json({ error: "Correo e ID_Biometrico son requeridos" });
+  }
+
+  try {
+    const [result] = await pool.query(
+      "UPDATE Usuarios SET ID_Biometrico = ? WHERE Correo = ?",
+      [ID_Biometrico, Correo]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    res.status(200).json({ message: "ID biométrico registrado con éxito" });
+  } catch (error) {
+    console.error("Error al registrar ID biométrico:", error);
+    res.status(500).json({ error: "Error al registrar ID biométrico" });
+  }
+});  
   
   return router; // Retornar el enrutador con las rutas configuradas
 };
