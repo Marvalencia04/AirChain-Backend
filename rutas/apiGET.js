@@ -253,6 +253,52 @@ router.get('/sensor/:id_usuario', async (req, res) => {
     }
   });
   
+
+
+
+
+
+
+
+
+
+
+
+  /**
+ * @brief Ruta para obtener la distancia diaria acumulada para un usuario específico.
+ * 
+ * @param {number} req.query.ID_Usuarios El ID del usuario para el que se quiere consultar la distancia.
+ * @returns {Object} JSON con la distancia diaria acumulada y la última fecha de actualización,
+ *          o un mensaje de error si不 se encuentra.
+ * @throws {Error} Si hay un problema en la consulta de la base de datos.
+ */
+  router.get("/getDistance", async (req, res) => {
+    const { ID_Usuarios } = req.query; // 获取用户 ID
+    try {
+      if (!ID_Usuarios) {
+        return res.status(400).json({ error: "ID_Usuarios es obligatorio" });
+      }
+  
+      // 查询数据库，获取今日的总距离
+      const [rows] = await pool.query(
+        "SELECT total_distance_today FROM Usuarios WHERE ID_Usuarios = ?",
+        [ID_Usuarios]
+      );
+  
+      if (rows.length === 0) {
+        return res.status(404).json({ message: "Usuario no encontrado" });
+      }
+  
+      res.status(200).json({
+        total_distance_today: rows[0].total_distance_today,
+      });
+    } catch (error) {
+      console.error("Error al obtener la distancia:", error);
+      res.status(500).json({ error: "Error al obtener la distancia", details: error.message });
+    }
+  });
+  
+
   return router; // Retornar el enrutador con las rutas configuradas
 };
 
