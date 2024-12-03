@@ -129,6 +129,46 @@ router.get("/datosAdmin", async (req, res) => {
     }
 });
 //------------------------------------------------------------------------------------------------
+/**
+ * @brief Ruta para autenticar a un usuario mediante huella digital.
+ *
+ * Filtra por el ID biométrico y verifica si el usuario existe y está verificado.
+ *
+ * @param {Object} req Objeto de solicitud con las credenciales.
+ * @param {string} req.query.ID_Biometrico Identificador biométrico único del usuario.
+ * @returns {Object} Objeto JSON con los datos del usuario o un mensaje de error.
+ * @throws {Error} Si el ID biométrico no es válido o hay problemas de consulta.
+ */
+router.get("/usuarios/biometrico", async (req, res) => {
+  const { ID_Biometrico } = req.query; // Obtener el ID biométrico desde la solicitud
+
+  try {
+      // Consultar el usuario con el ID biométrico proporcionado
+      const [rows] = await pool.query(
+          "SELECT ID_Usuarios, Nombre, Apellidos, Correo, Telefono, Verificado FROM Usuarios WHERE ID_Biometrico = ?",
+          [ID_Biometrico]
+      );
+
+      // Validar si el usuario existe
+      if (rows.length === 0) {
+          return res.status(404).json({ error: "Usuario no encontrado. Verifica el ID biométrico." });
+      }
+
+      const usuario = rows[0];
+
+      // Verificar si el usuario está verificado
+      if (usuario.Verificado === 0) {
+          return res.status(403).json({ error: "Cuenta no verificada. Por favor verifica tu cuenta antes de iniciar sesión." });
+      }
+
+
+      // Si todo es correcto, enviar solo el usuario encontrado
+      res.json(usuario);
+  } catch (error) {
+      console.error("Error al autenticar con huella biométrica:", error);
+      res.status(500).send("Error en el servidor al autenticar con huella biométrica.");
+  }
+});
 
 
 
@@ -252,7 +292,7 @@ router.get('/sensor/:id_usuario', async (req, res) => {
       });
     }
   });
-  
+
 
 
 
@@ -266,7 +306,7 @@ router.get('/sensor/:id_usuario', async (req, res) => {
 
   /**
  * @brief Ruta para obtener la distancia diaria acumulada para un usuario específico.
- * 
+ *
  * @param {number} req.query.ID_Usuarios El ID del usuario para el que se quiere consultar la distancia.
  * @returns {Object} JSON con la distancia diaria acumulada y la última fecha de actualización,
  *          o un mensaje de error si不 se encuentra.
@@ -278,17 +318,17 @@ router.get('/sensor/:id_usuario', async (req, res) => {
       if (!ID_Usuarios) {
         return res.status(400).json({ error: "ID_Usuarios es obligatorio" });
       }
-  
+
       // 查询数据库，获取今日的总距离
       const [rows] = await pool.query(
         "SELECT total_distance_today FROM Usuarios WHERE ID_Usuarios = ?",
         [ID_Usuarios]
       );
-  
+
       if (rows.length === 0) {
         return res.status(404).json({ message: "Usuario no encontrado" });
       }
-  
+
       res.status(200).json({
         total_distance_today: rows[0].total_distance_today,
       });
@@ -297,7 +337,7 @@ router.get('/sensor/:id_usuario', async (req, res) => {
       res.status(500).json({ error: "Error al obtener la distancia", details: error.message });
     }
   });
-  
+
 
   return router; // Retornar el enrutador con las rutas configuradas
 };
