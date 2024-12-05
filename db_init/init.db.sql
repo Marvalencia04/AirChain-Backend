@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS `Usuarios` (
   `Distancia` INT DEFAULT 0,
   `Verificado` INT DEFAULT 0,
   `total_distance_today` DECIMAL(10, 2) DEFAULT 0.00,
-  `last_updated` DATE NOT NULL DEFAULT CURRENT_DATE(),
+  `last_updated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
   PRIMARY KEY (`ID_Usuarios`)
 );
 
