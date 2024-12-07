@@ -313,13 +313,13 @@ router.get('/sensor/:id_usuario', async (req, res) => {
  * @throws {Error} Si hay un problema en la consulta de la base de datos.
  */
   router.get("/getDistance", async (req, res) => {
-    const { ID_Usuarios } = req.query; // 获取用户 ID
+    const { ID_Usuarios } = req.query; // Obtener ID de usuario
     try {
       if (!ID_Usuarios) {
         return res.status(400).json({ error: "ID_Usuarios es obligatorio" });
       }
 
-      // 查询数据库，获取今日的总距离
+    //Consulta la base de datos para obtener la distancia total de hoy
       const [rows] = await pool.query(
         "SELECT total_distance_today FROM Usuarios WHERE ID_Usuarios = ?",
         [ID_Usuarios]

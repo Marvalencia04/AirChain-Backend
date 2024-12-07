@@ -274,30 +274,34 @@ router.post("/distancia", async (req, res) => {
       const usuario = rows[0];
       const hoy = new Date().toISOString().split("T")[0];
       const ultimaActualizacion = usuario.last_updated ? new Date(usuario.last_updated).toISOString().split("T")[0] : null;
-
+// Asegúrate de que distancia es un número
+const distanciaNumerica = parseFloat(distancia);
+if (isNaN(distanciaNumerica)) {
+    return res.status(400).json({ error: "La distancia debe ser un número válido" });
+}
       // Si no es hoy, resetea la distancia
-      let nuevaDistancia = usuario.total_distance_today;
+      let nuevaDistancia = parseFloat(usuario.total_distance_today);
       if (ultimaActualizacion !== hoy) {
           nuevaDistancia = 0;
       }
-
-      //Añadir nueva distancia
-      nuevaDistancia += distancia;
+      
+      nuevaDistancia += distanciaNumerica; // Suma como decimal
 
       //Actualizar base de datos
       await pool.query(
-          "UPDATE Usuarios SET total_distance_today = ?, last_updated = ? WHERE ID_Usuarios = ?",
-          [nuevaDistancia, hoy, ID_Usuarios]
-      );
+        "UPDATE Usuarios SET total_distance_today = ?, last_updated = ? WHERE ID_Usuarios = ?",
+        [nuevaDistancia, hoy, ID_Usuarios]
+    );
 
       res.status(200).json({
           message: "Distancia actualizada correctamente",
           nuevaDistancia,
       });
-  } catch (error) {
-      console.error("Error al actualizar la distancia:", error);
-      res.status(500).json({ error: "Error al actualizar la distancia" });
-  }
+  }catch (error) {
+    console.error("Error al actualizar la distancia:", error);
+    res.status(500).json({ error: "Error al actualizar la distancia", message: error.message });
+}
+
 });
 
 
