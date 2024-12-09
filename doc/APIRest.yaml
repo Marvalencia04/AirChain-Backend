@@ -171,6 +171,62 @@ paths:
           description: Faltan datos requeridos
         '500':
           description: Error al registrar el usuario
+    /usuario:
+    put:
+      summary: Actualizar datos del usuario
+      description: Permite actualizar los datos personales de un usuario identificado por su correo.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Correo:
+                  type: string
+                  description: El correo electrónico del usuario que se va a actualizar.
+                Nombre:
+                  type: string
+                  description: El nuevo nombre del usuario.
+                Apellidos:
+                  type: string
+                  description: Los nuevos apellidos del usuario.
+                Telefono:
+                  type: string
+                  description: El nuevo número de teléfono del usuario.
+              required:
+                - Correo
+      responses:
+        '200':
+          description: Usuario actualizado correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Usuario actualizado correctamente
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Usuario no encontrado
+        '500':
+          description: Error al actualizar usuario
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Error al actualizar usuario
 
   /usuario/{correo}:
     get:
@@ -281,3 +337,210 @@ paths:
           description: Usuario no encontrado
         '500':
           description: Error al verificar el usuario
+
+  /usuarios/biometrico:
+    get:
+      summary: Autenticar un usuario mediante huella digital
+      parameters:
+        - in: query
+          name: ID_Biometrico
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Usuario encontrado y autenticado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ID_Usuarios:
+                    type: integer
+                  Nombre:
+                    type: string
+                  Apellidos:
+                    type: string
+                  Correo:
+                    type: string
+                  Telefono:
+                    type: string
+                  Verificado:
+                    type: integer
+        '403':
+          description: Usuario no verificado
+        '404':
+          description: Usuario no encontrado
+        '500':
+          description: Error al autenticar con huella biométrica
+    post:
+      summary: Registrar el identificador biométrico de un usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Correo:
+                  type: string
+                ID_Biometrico:
+                  type: string
+      responses:
+        '200':
+          description: ID biométrico registrado con éxito
+        '400':
+          description: Faltan datos requeridos
+        '404':
+          description: Usuario no encontrado
+        '500':
+          description: Error al registrar ID biométrico
+
+  /sensor:
+    post:
+      summary: Crear un nuevo sensor
+      responses:
+        '201':
+          description: Sensor creado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id_sensor:
+                    type: integer
+                  etiqueta:
+                    type: string
+        '500':
+          description: Error al crear el sensor
+
+  /sensor/{id_usuario}:
+    get:
+      summary: Obtener sensores asociados a un usuario
+      parameters:
+        - in: path
+          name: id_usuario
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Sensores encontrados
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    etiqueta:
+                      type: string
+                    usuario:
+                      type: integer
+        '404':
+          description: No se encontraron sensores para el usuario
+        '500':
+          description: Error al buscar sensores
+    /sensor/{etiqueta}:
+    put:
+      summary: Asignar un sensor a un usuario
+      description: Asigna un sensor identificado por su etiqueta a un usuario especificado por su ID.
+      parameters:
+        - in: path
+          name: etiqueta
+          required: true
+          schema:
+            type: string
+          description: La etiqueta única del sensor.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_usuario:
+                  type: integer
+                  description: El ID del usuario al cual se asignará el sensor.
+      responses:
+        '200':
+          description: Usuario asignado al sensor exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Usuario asignado al sensor exitosamente
+                  etiqueta:
+                    type: string
+                  id_usuario:
+                    type: integer
+        '400':
+          description: El campo id_usuario es requerido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: El campo id_usuario es requerido
+        '404':
+          description: Sensor no encontrado o no se pudo actualizar
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Sensor no encontrado o no se pudo actualizar
+        '500':
+          description: Error al asignar el usuario al sensor en la base de datos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Error al asignar el usuario al sensor en la base de datos
+                  details:
+                    type: string
+                    example: Descripción detallada del error
+
+
+  /distancia:
+    post:
+      summary: Añadir distancia recorrida
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ID_Usuarios:
+                  type: integer
+                distancia:
+                  type: number
+      responses:
+        '200':
+          description: Distancia actualizada correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nuevaDistancia:
+                    type: number
+        '400':
+          description: Faltan datos requeridos
+        '404':
+          description: Usuario no encontrado
+        '500':
+          description: Error al actualizar la distancia

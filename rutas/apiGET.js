@@ -293,17 +293,6 @@ router.get('/sensor/:id_usuario', async (req, res) => {
     }
   });
 
-
-
-
-
-
-
-
-
-
-
-
   /**
  * @brief Ruta para obtener la distancia diaria acumulada para un usuario específico.
  *
