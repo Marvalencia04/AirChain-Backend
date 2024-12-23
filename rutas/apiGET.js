@@ -46,6 +46,26 @@ const apiGETRoutes = (pool) => {
 //------------------------------------------------------------------------------------------------
 
 
+
+
+//------------------------------------------------------------------------------------------------
+/**
+ * @brief Endpoint para obtener datos administrativos de sensores.
+ * 
+ * Este endpoint realiza una consulta a la base de datos para obtener información
+ * de los sensores, incluyendo el propietario, la última medida registrada, y los 
+ * valores máximos registrados para diferentes gases (Ozono, Dióxido de Nitrógeno y Monóxido de Carbono).
+ * 
+ * @route GET /datosAdmin
+ * @async
+ * 
+ * @param {Object} req - Objeto de solicitud HTTP.
+ * @param {Object} res - Objeto de respuesta HTTP.
+ * 
+ * @returns {Object} - Retorna un JSON con los datos de los sensores, o un mensaje de error si ocurre algún problema.
+ * 
+ * @throws {Error} - Retorna un código de estado 500 y un mensaje de error si ocurre una excepción.
+ */
 router.get("/datosAdmin", async (req, res) => {
   try {
     const [rows] = await pool.query("SELECT s.ID_Sensor, u.Nombre AS Propietario, MAX(m.Hora) AS Ultima_Medida, MAX(CASE WHEN m.Gas = 'Ozono' THEN m.Valor END) AS Ozono, MAX(CASE WHEN m.Gas = 'Dióxido de Nitrógeno' THEN m.Valor END) AS Dioxido_Nitrogeno, MAX(CASE WHEN m.Gas = 'Monóxido de Carbono' THEN m.Valor END) AS Monoxido_Carbono FROM Sensor s LEFT JOIN Usuarios u ON s.Usuario = u.ID_Usuarios LEFT JOIN Medidas m ON s.ID_Sensor = m.Sensor GROUP BY s.ID_Sensor, u.Nombre;");
@@ -60,7 +80,7 @@ router.get("/datosAdmin", async (req, res) => {
 //------------------------------------------------------------------------------------------------
 
 
-//------------------------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------------------------
 
@@ -292,6 +312,17 @@ router.get('/sensor/:id_usuario', async (req, res) => {
       });
     }
   });
+
+
+
+
+
+
+
+
+
+
+
 
   /**
  * @brief Ruta para obtener la distancia diaria acumulada para un usuario específico.

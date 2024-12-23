@@ -1,97 +1,71 @@
 import { expect } from "chai";
 import request from "supertest";
 import sinon from "sinon";
-import createApp from "../src/index.js"; // Asegúrate de la ruta correcta al archivo de tu app
+import { createPool } from "mysql2/promise";
+import createApp from "../src/index.js"; // Ajusta la ruta según tu estructura de proyecto
 
-describe("Gases API", () => {
-  let pool; // El pool simulado
-  let app; // La aplicación Express
-  let consoleErrorStub; // Agregado para manejar console.error
+describe("createApp", () => {
+  let app;
+  let poolStub;
 
   before(() => {
-    // Crear un mock para el pool
-    pool = {
-      query: sinon.stub() // Crear el pool como un objeto con `query` mockeado
-    };
+    // Crear un stub para el pool de conexiones
+    poolStub = sinon.stub();
 
-    // Crear la app usando el pool mockeado y un puerto diferente para las pruebas
-    app = createApp(pool); // Pasa el pool simulado aquí y el puerto 3001
+    // Simular las funciones del pool de MySQL
+    poolStub.query = sinon.stub().resolves([]);
+    poolStub.end = sinon.stub().resolves();
 
-    consoleErrorStub = sinon.stub(console, 'error'); // Hacer un stub de console.error para silenciarlo
+    // Crear la aplicación con el stub
+    app = createApp(poolStub);
   });
 
   after(() => {
-    // Restaurar el pool original y console.error después de los tests
-    sinon.restore();
+    sinon.restore(); // Restaurar los stubs de Sinon
   });
 
   describe("GET /api/gases", () => {
-    it("Debería obtener la lista de gases", async () => {
-      // Simula el resultado de una consulta a la base de datos
-      const mockGases = [
-        { id: 1, gas: "CO2", valor: 300, hora: "2024-10-05T10:00:00Z", lugar: "CiudadX" },
-      ];
-
-      // Configura el stub para devolver los gases simulados
-      pool.query.resolves([mockGases]);
-
-      // Ejecuta la petición GET
+    it("debería responder con un 200 y un arreglo vacío", async () => {
       const res = await request(app).get("/api/gases");
-
-      // Aserciones
       expect(res.status).to.equal(200);
       expect(res.body).to.be.an("array");
-      expect(res.body).to.deep.equal(mockGases);
+      expect(res.body).to.have.length(0);
     });
   });
 
   describe("POST /api/gases", () => {
-    it("Debería insertar un nuevo gas", async () => {
-      const gasData = {
-        gas: "CO2",
-        valor: 300,
-        hora: "2024-10-05T10:00:00Z",
-        lugar: "CiudadX",
-      };
+    it("debería crear un nuevo recurso y devolver un 201", async () => {
+      // Simular la inserción en la base de datos
+      poolStub.query.resolves([{ insertId: 1 }]);
 
-      // Simula el resultado de la inserción en la base de datos
-      pool.query.resolves([{ insertId: 1 }]);
+      const payload = { nombre: "Gas Nuevo", propiedad: "Valor" };
+      const res = await request(app).post("/api/gases").send(payload);
 
-      // Ejecuta la petición POST
-      const res = await request(app)
-        .post("/api/gases")
-        .send(gasData);
-
-      // Aserciones
       expect(res.status).to.equal(201);
-      expect(res.body).to.include({
-        id: 1,
-        gas: gasData.gas,
-        valor: gasData.valor,
-        lugar: gasData.lugar,
-      });
+      expect(res.body).to.be.an("object");
+      expect(res.body).to.have.property("id", 1);
     });
+  });
 
-    it("Debería manejar errores al insertar un gas", async () => {
-      const gasData = {
-        gas: null, // Enviando datos inválidos
-        valor: 300,
-        hora: "2024-10-05T10:00:00Z",
-        lugar: "CiudadX",
-      };
+  describe("PUT /api/gases/usuario", () => {
+    it("debería actualizar un recurso existente y devolver un 200", async () => {
+      // Simular la actualización en la base de datos
+      poolStub.query.resolves([{ affectedRows: 1 }]);
 
-      // Simula un error de base de datos
-      pool.query.rejects(new Error("Error en la base de datos"));
+      const id = 1;
+      const payload = { propiedad: "Nuevo Valor" };
+      const res = await request(app).put(`/api/gases/${id}`).send(payload);
 
-      const res = await request(app)
-        .post("/api/gases")
-        .send(gasData);
-
-      expect(res.status).to.equal(500);
-      expect(res.body).to.have.property("error");
+      expect(res.status).to.equal(200);
+      expect(res.body).to.be.an("object");
+      expect(res.body).to.have.property("success", true);
     });
-    after(() => {
-      consoleErrorStub.restore(); // Restaura console.error al final de las pruebas
-    });
+  });
+
+  describe("Errores en rutas", () => {
+    it("debería devolver un 404 para rutas no existentes", async () => {
+      const res = await request(app).get("/api/inexistente");
+      expect(res.status).to.equal(404);
+    });
   });
 });

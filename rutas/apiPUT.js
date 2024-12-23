@@ -61,7 +61,28 @@ router.put("/usuario", async (req, res) => {
   }
 });
 //------------------------------------------------------------------------------------------------
-
+/**
+ * @brief Endpoint para cambiar la contraseña de un usuario.
+ * 
+ * Este endpoint permite a un usuario actualizar su contraseña. Primero verifica 
+ * que la contraseña actual proporcionada sea correcta, valida la nueva contraseña 
+ * según criterios específicos y luego la actualiza en la base de datos.
+ * 
+ * @route PUT /usuario/:correo/cambiar-contrasena
+ * @async
+ * 
+ * @param {Object} req - Objeto de solicitud HTTP.
+ * @param {string} req.params.correo - Correo electrónico del usuario cuya contraseña será cambiada.
+ * @param {Object} req.body - Contiene la contraseña actual y la nueva.
+ * @param {string} req.body.contrasenaActual - Contraseña actual proporcionada por el usuario.
+ * @param {string} req.body.contrasenaNueva - Nueva contraseña a establecer.
+ * @param {Object} res - Objeto de respuesta HTTP.
+ * 
+ * @returns {Object} - Retorna un mensaje de éxito si la contraseña se actualizó correctamente o un mensaje de error si hubo un problema.
+ * 
+ * @throws {Error} - Retorna un código de estado 404 si el usuario no existe, 401 si la contraseña actual no coincide, 
+ * o 500 si ocurre un error inesperado.
+ */
 router.put("/usuario/:correo/cambiar-contrasena", async (req, res) => {
   const { correo } = req.params;
   const { contrasenaActual, contrasenaNueva } = req.body;
